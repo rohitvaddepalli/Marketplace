@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --bg-dark: #1f2937;
+            --bg-darker: #111827;
+            --text-light: #f9fafb;
+            --text-gray: #e5e7eb;
+            --text-muted: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark), #000);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            grid-template-rows: 60px 1fr;
+            grid-template-areas:
+                "sidebar header"
+                "sidebar main";
+            height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            grid-area: header;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            grid-area: sidebar;
+            background: rgba(0, 0, 0, 0.3);
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0 1.5rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .brand-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #60a5fa, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            padding: 0.75rem 1.5rem;
+            margin-top: 1rem;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-list {
+            list-style-type: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-gray);
+            text-decoration: none;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+
+        .nav-link.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: white;
+            border-left: 3px solid var(--primary);
+        }
+
+        .nav-icon {
+            width: 18px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main {
+            grid-area: main;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-description {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 500;
+        }
+
+        .stat-change.positive {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .stat-change.negative {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .stat-icon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.25rem;
+            opacity: 0.3;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.875rem;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .badge-info {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .btn-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Form Elements */
+        .search-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .modal {
+            background: var(--bg-dark);
+            border-radius: 0.5rem;
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .page-item {
+            list-style-type: none;
+        }
+
+        .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-light);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .page-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .page-link.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Loader */
+        .loader {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "header"
+                    "main";
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="grid-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-title">Admin Dashboard</div>
+            <div class="user-profile">
+                <span id="admin-name">Admin</span>
+                <div class="user-avatar">A</div>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">Marketplace</div>
+            </div>
+
+            <div class="nav-title">Dashboard</div>
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="#overview" class="nav-link active" data-section="overview">
+                        <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
+                        <span>Overview</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-title">Management</div>
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="#users" class="nav-link" data-section="users">
+                        <span class="nav-icon"><i class="fas fa-users"></i></span>
+                        <span>Users</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#sellers" class="nav-link" data-section="sellers">
+                        <span class="nav-icon"><i class="fas fa-store"></i></span>
+                        <span>Sellers</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#stores" class="nav-link" data-section="stores">
+                        <span class="nav-icon"><i class="fas fa-shopping-bag"></i></span>
+                        <span>Stores</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#products" class="nav-link" data-section="products">
+                        <span class="nav-icon"><i class="fas fa-box"></i></span>
+                        <span>Products</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#orders" class="nav-link" data-section="orders">
+                        <span class="nav-icon"><i class="fas fa-shopping-cart"></i></span>
+                        <span>Orders</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-title">Settings</div>
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="#settings" class="nav-link" data-section="settings">
+                        <span class="nav-icon"><i class="fas fa-cog"></i></span>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="logout-link">
+                        <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Overview Section -->
+            <section id="overview" class="section active">
+                <div class="section-header">
+                    <h2 class="section-title">Dashboard Overview</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-outline" id="refresh-dashboard">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Refresh</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="dashboard-cards">
+                    <div class="card stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-title">Total Users</div>
+                        <div class="stat-value" id="total-users">0</div>
+                        <div class="stat-description">
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>12%</span>
+                            </div>
+                            <span>vs last month</span>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card">
+                        <div class="stat-icon"><i class="fas fa-store"></i></div>
+                        <div class="stat-title">Total Sellers</div>
+                        <div class="stat-value" id="total-sellers">0</div>
+                        <div class="stat-description">
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>8%</span>
+                            </div>
+                            <span>vs last month</span>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card">
+                        <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+                        <div class="stat-title">Total Stores</div>
+                        <div class="stat-value" id="total-stores">0</div>
+                        <div class="stat-description">
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>5%</span>
+                            </div>
+                            <span>vs last month</span>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card">
+                        <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="stat-title">Total Orders</div>
+                        <div class="stat-value" id="total-orders">0</div>
+                        <div class="stat-description">
+                            <div class="stat-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                <span>15%</span>
+                            </div>
+                            <span>vs last month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h3 class="section-title">Recent Orders</h3>
+                    <a href="#orders" class="nav-link-inline" data-section="orders">View All</a>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Store</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-orders-table">
+                            <tr>
+                                <td colspan="6" class="loading-container">
+                                    <div class="loader"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section-header">
+                    <h3 class="section-title">Recent Stores</h3>
+                    <a href="#stores" class="nav-link-inline" data-section="stores">View All</a>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Store Name</th>
+                                <th>Owner</th>
+                                <th>Date Created</th>
+                                <th>Products</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-stores-table">
+                            <tr>
+                                <td colspan="5" class="loading-container">
+                                    <div class="loader"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Users Section -->
+            <section id="users" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Users Management</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" id="add-user-btn">
+                            <i class="fas fa-plus"></i>
+                            <span>Add User</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="search-users" placeholder="Search users...">
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Date Joined</th>
+                                <th>Orders</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table">
+                            <tr>
+                                <td colspan="6" class="loading-container">
+                                    <div class="loader"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <ul class="pagination" id="users-pagination">
+                    <!-- Pagination will be generated dynamically -->
+                </ul>
+            </section>
+
+            <!-- Sellers Section -->
+            <section id="sellers" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Sellers Management</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" id="add-seller-btn">
+                            <i class="fas fa-plus"></i>
+                            <span>Add Seller</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="search-sellers" placeholder="Search sellers...">
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Seller ID</th>
+                                <th>Email</th>
+                                <th>Stores</th>
+                                <th>Date Joined</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sellers-table">
+                            <tr>
+                                <td colspan="6" class="loading-container">
+                                    <div class="loader"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <ul class="pagination" id="sellers-pagination">
+                    <!-- Pagination will be generated dynamically -->
+                </ul>
+            </section>
+
+            <!-- Stores Section -->
+            <section id="stores" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Stores Management</h2>
+                </div>
+
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="search-stores" placeholder="Search stores...">
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Store ID</th>
+                                <th>Store Name</th>
+                                <th>Owner</th>
+                                <th>Products</th>
+                                <th>Date Created</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stores-table">
+                            <tr>
+                                <td colspan="7" class="loading-container">
+                                    <div class="loader"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <ul class="pagination" id="stores-pagination">
+                    <!-- Pagination will be generated dynamically -->
+                </ul>
+            </section>
+
+            <!-- Products Section -->
+            <section id="products" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Products Management</h2>
+                </div>
+
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="search-products" placeholder="Search products...">
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Product ID</th>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Store</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table">
+                            <tr>
+                                <td colspan="7" class="loading-container">
+                                    <div class="loader"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <ul class="pagination" id="products-pagination">
+                    <!-- Pagination will be generated dynamically -->
+                </ul>
+            </section>
+
+            <!-- Orders Section -->
+            <section id="orders" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Orders Management</h2>
+                </div>
+
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="search-orders" placeholder="Search orders...">
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Store</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table">
+                            <tr>
+                                <td colspan="7" class="loading-container">
+                                    <div class="loader"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <ul class="pagination" id="orders-pagination">
+                    <!-- Pagination will be generated dynamically -->
+                </ul>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Admin Settings</h2>
+                </div>
+
+                <div class="card">
+                    <form id="settings-form">
+                        <div class="form-group">
+                            <label class="form-label">Admin Email</label>
+                            <input type="email" class="form-input" id="admin-email" placeholder="Enter admin email" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Admin Password</label>
+                            <input type="password" class="form-input" id="admin-password" placeholder="Enter admin password" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirm Password</label>
+                            <input type="password" class="form-input" id="confirm-password" placeholder="Confirm admin password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="save-settings-btn">Save Settings</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        // Global variables
+        let currentAdmin = null;
+        let currentToken = null;
+        const API_BASE_URL = 'http://localhost:3000/api/admin';
+        
+        // DOM Elements
+        const adminNameElement = document.getElementById('admin-name');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.section');
+        const logoutLink = document.getElementById('logout-link');
+        const refreshDashboardBtn = document.getElementById('refresh-dashboard');
+        
+        // Stats elements
+        const totalUsersElement = document.getElementById('total-users');
+        const totalSellersElement = document.getElementById('total-sellers');
+        const totalStoresElement = document.getElementById('total-stores');
+        const totalOrdersElement = document.getElementById('total-orders');
+        
+        // Tables
+        const recentOrdersTable = document.getElementById('recent-orders-table');
+        const recentStoresTable = document.getElementById('recent-stores-table');
+        const usersTable = document.getElementById('users-table');
+        const sellersTable = document.getElementById('sellers-table');
+        const storesTable = document.getElementById('stores-table');
+        const productsTable = document.getElementById('products-table');
+        const ordersTable = document.getElementById('orders-table');
+        
+        // Search inputs
+        const searchUsersInput = document.getElementById('search-users');
+        const searchSellersInput = document.getElementById('search-sellers');
+        const searchStoresInput = document.getElementById('search-stores');
+        const searchProductsInput = document.getElementById('search-products');
+        const searchOrdersInput = document.getElementById('search-orders');
+        
+        // Pagination elements
+        const usersPagination = document.getElementById('users-pagination');
+        const sellersPagination = document.getElementById('sellers-pagination');
+        const storesPagination = document.getElementById('stores-pagination');
+        const productsPagination = document.getElementById('products-pagination');
+        const ordersPagination = document.getElementById('orders-pagination');
+        
+        // Settings form
+        const settingsForm = document.getElementById('settings-form');
+        
+        // Check if admin is logged in
+        checkAdminAuth();
+        
+        // Event Listeners
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const sectionId = this.getAttribute('data-section');
+                showSection(sectionId);
+                
+                // Update active state
+                navLinks.forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Load section data
+                loadSectionData(sectionId);
+            });
+        });
+        
+        logoutLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            logoutAdmin();
+        });
+        
+        refreshDashboardBtn.addEventListener('click', function() {
+            loadDashboardData();
+        });
+        
+        // Search functionality
+        searchUsersInput.addEventListener('input', debounce(() => loadUsers(), 500));
+        searchSellersInput.addEventListener('input', debounce(() => loadSellers(), 500));
+        searchStoresInput.addEventListener('input', debounce(() => loadStores(), 500));
+        searchProductsInput.addEventListener('input', debounce(() => loadProducts(), 500));
+        searchOrdersInput.addEventListener('input', debounce(() => loadOrders(), 500));
+        
+        // Settings form submission
+        if (settingsForm) {
+            settingsForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateAdminSettings();
+            });
+        }
+        
+        // Functions
+        function checkAdminAuth() {
+            const token = localStorage.getItem('adminToken');
+            if (token) {
+                currentToken = token;
+                fetchAdminProfile();
+            } else {
+                redirectToLogin();
+            }
+        }
+        
+        function fetchAdminProfile() {
+            fetch(`${API_BASE_URL}/profile`, {
+                headers: {
+                    'Authorization': `Bearer ${currentToken}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    // If profile fetch fails, it might be due to invalid token
+                    // But we'll just show a default admin name instead of redirecting
+                    console.warn('Failed to fetch admin profile, but continuing');
+                    return { admin: { fullname: 'Admin' } };
+                }
+                return response.json();
+            })
+            .then(data => {
+                currentAdmin = data.admin || { fullname: 'Admin' };
+                adminNameElement.textContent = currentAdmin.fullname || 'Admin';
+                loadDashboardData();
+            })
+            .catch(error => {
+                console.error('Error fetching admin profile:', error);
+                redirectToLogin();
+            });
+        }
+        
+        function loadDashboardData() {
+            fetch(`${API_BASE_URL}/stats`, {
+                headers: {
+                    'Authorization': `Bearer ${currentToken}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch dashboard stats');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Update stats
+                totalUsersElement.textContent = data.stats.totalUsers;
+                totalSellersElement.textContent = data.stats.totalSellers;
+                totalStoresElement.textContent = data.stats.totalStores;
+                totalOrdersElement.textContent = data.stats.totalOrders;
+                
+                // Update recent orders table
+                updateRecentOrdersTable(data.recentOrders);
+                
+                // Update recent stores table
+                updateRecentStoresTable(data.recentStores);
+            })
+            .catch(error => {
+                console.error('Error loading dashboard data:', error);
+                showError('Failed to load dashboard data');
+            });
+        }
+        
+        function updateRecentOrdersTable(orders) {
+            if (!orders || orders.length === 0) {
+                recentOrdersTable.innerHTML = '<tr><td colspan="6" class="text-center">No recent orders found</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            orders.forEach(order => {
+                html += `
+                    <tr>
+                        <td>${order._id}</td>
+                        <td>${order.customerName}</td>
+                        <td>${order.storeId?.storeName || 'N/A'}</td>
+                        <td>${new Date(order.orderDate).toLocaleDateString()}</td>
+                        <td>₹${order.totalAmount.toFixed(2)}</td>
+                        <td><span class="badge ${getStatusBadgeClass(order.status)}">${order.status}</span></td>
+                    </tr>
+                `;
+            });
+            
+            recentOrdersTable.innerHTML = html;
+        }
+        
+        function updateRecentStoresTable(stores) {
+            if (!stores || stores.length === 0) {
+                recentStoresTable.innerHTML = '<tr><td colspan="5" class="text-center">No recent stores found</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            stores.forEach(store => {
+                html += `
+                    <tr>
+                        <td>${store.storeName}</td>
+                        <td>${store.seller}</td>
+                        <td>${new Date(store.createdAt).toLocaleDateString()}</td>
+                        <td>${store.productCount || 0}</td>
+                        <td><span class="badge ${getStatusBadgeClass(store.status || 'active')}">${store.status || 'active'}</span></td>
+                    </tr>
+                `;
+            });
+            
+            recentStoresTable.innerHTML = html;
+        }
+        
+        function getStatusBadgeClass(status) {
+            switch (status.toLowerCase()) {
+                case 'active':
+                case 'completed':
+                    return 'badge-success';
+                case 'pending':
+                    return 'badge-warning';
+                case 'cancelled':
+                case 'suspended':
+                case 'inactive':
+                    return 'badge-danger';
+                default:
+                    return 'badge-info';
+            }
+        }
+        
+        function showSection(sectionId) {
+            sections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === sectionId) {
+                    section.classList.add('active');
+                }
+            });
+        }
+        
+        function loadSectionData(sectionId) {
+            switch (sectionId) {
+                case 'overview':
+                    loadDashboardData();
+                    break;
+                case 'users':
+                    loadUsers();
+                    break;
+                case 'sellers':
+                    loadSellers();
+                    break;
+                case 'stores':
+                    loadStores();
+                    break;
+                case 'products':
+                    loadProducts();
+                    break;
+                case 'orders':
+                    loadOrders();
+                    break;
+                case 'settings':
+                    loadAdminSettings();
+                    break;
+            }
+        }
+        
+        function loadUsers(page = 1, limit = 10) {
+            const searchQuery = searchUsersInput.value.trim();
+            
+            let url = `${API_BASE_URL}/users?page=${page}&limit=${limit}`;
+            if (searchQuery) {
+                url += `&search=${encodeURIComponent(searchQuery)}`;
+            }
+            
+            fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${currentToken}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch users');
+                }
+                return response.json();
+            })
+            .then(data => {
+                updateUsersTable(data.users);
+                updatePagination(usersPagination, data, page, 'users');
+            })
+            .catch(error => {
+                console.error('Error loading users:', error);
+                usersTable.innerHTML = '<tr><td colspan="6" class="text-center">Failed to load users</td></tr>';
+            });
+        }
+        
+        function updateUsersTable(users) {
+            if (!users || users.length === 0) {
+                usersTable.innerHTML = '<tr><td colspan="6" class="text-center">No users found</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            users.forEach(user => {
+                html += `
+                    <tr>
+                        <td>${user._id}</td>
+                        <td>${user.fullname}</td>
+                        <td>${user.email}</td>
+                        <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+                        <td>${user.orderCount || 0}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline" onclick="editUser('${user._id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline" onclick="deleteUser('${user._id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            usersTable.innerHTML = html;
+        }
+        
+        function loadSellers(page = 1, limit = 10) {
+            const searchQuery = searchSellersInput.value.trim();
+            
+            let url = `${API_BASE_URL}/sellers?page=${page}&limit=${limit}`;
+            if (searchQuery) {
+                url += `&search=${encodeURIComponent(searchQuery)}`;
+            }
+            
+            fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${currentToken}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch sellers');
+                }
+                return response.json();
+            })
+            .then(data => {
+                updateSellersTable(data.sellers);
+                updatePagination(sellersPagination, data, page, 'sellers');
+            })
+            .catch(error => {
+                console.error('Error loading sellers:', error);
+                sellersTable.innerHTML = '<tr><td colspan="6" class="text-center">Failed to load sellers</td></tr>';
+            });
+        }
+        
+        function updateSellersTable(sellers) {
+            if (!sellers || sellers.length === 0) {
+                sellersTable.innerHTML = '<tr><td colspan="6" class="text-center">No sellers found</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            sellers.forEach(seller => {
+                html += `
+                    <tr>
+                        <td>${seller._id}</td>
+                        <td>${seller.email}</td>
+                        <td>${seller.storeCount || 0}</td>
+                        <td>${new Date(seller.createdAt).toLocaleDateString()}</td>
+                        <td><span class="badge ${seller.status ? getStatusBadgeClass(seller.status) : 'badge-success'}">${seller.status || 'active'}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline" onclick="editSeller('${seller._id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline" onclick="deleteSeller('${seller._id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            sellersTable.innerHTML = html;
+        }
+        
+        function loadStores(page = 1, limit = 10) {
+            const searchQuery = searchStoresInput.value.trim();
+            
+            let url = `${API_BASE_URL}/stores?page=${page}&limit=${limit}`;
+            if (searchQuery) {
+                url += `&search=${encodeURIComponent(searchQuery)}`;
+            }
+            
+            fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${currentToken}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch stores');
+                }
+                return response.json();
+            })
+            .then(data => {
+                updateStoresTable(data.stores);
+                updatePagination(storesPagination, data, page, 'stores');
+            })
+            .catch(error => {
+                console.error('Error loading stores:', error);
+                storesTable.innerHTML = '<tr><td colspan="7" class="text-center">Failed to load stores</td></tr>';
+            });
+        }
+        
+        function updateStoresTable(stores) {
+            if (!stores || stores.length === 0) {
+                storesTable.innerHTML = '<tr><td colspan="7" class="text-center">No stores found</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            stores.forEach(store => {
+                html += `
+                    <tr>
+                        <td>${store._id}</td>
+                        <td>${store.storeName}</td>
+                        <td>${store.seller}</td>
+                        <td>${store.productCount || 0}</td>
+                        <td>${new Date(store.createdAt).toLocaleDateString()}</td>
+                        <td><span class="badge ${getStatusBadgeClass(store.status || 'active')}">${store.status || 'active'}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline" onclick="editStore('${store._id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline" onclick="updateStoreStatus('${store._id}', '${store.status || 'active'}')">
+                                <i class="fas fa-sync"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            storesTable.innerHTML = html;
+        }
+        
+        function loadProducts(page = 1, limit = 10) {
+            const searchQuery = searchProductsInput.value.trim();
+            
+            let url = `${API_BASE_URL}/products?page=${page}&limit=${limit}`;
+            if (searchQuery) {
+                url += `&search=${encodeURIComponent(searchQuery)}`;
+            }
+            
+            fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${currentToken}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch products');
+                }
+                return response.json();
+            })
+            .then(data => {
+                updateProductsTable(data.products);
+                updatePagination(productsPagination, data, page, 'products');
+            })
+            .catch(error => {
+                console.error('Error loading products:', error);
+                productsTable.innerHTML = '<tr><td colspan="7" class="text-center">Failed to load products</td></tr>';
+            });
+        }
+        
+        function updateProductsTable(products) {
+            if (!products || products.length === 0) {
+                productsTable.innerHTML = '<tr><td colspan="7" class="text-center">No products found</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            products.forEach(product => {
+                html += `
+                    <tr>
+                        <td>${product._id}</td>
+                        <td>
+                            ${product.image ? 
+                                `<img src="${product.image}" alt="${product.name}" width="50" height="50" style="object-fit: cover;">` : 
+                                '<div class="text-muted">No image</div>'}
+                        </td>
+                        <td>${product.name}</td>
+                        <td>${product.storeId?.storeName || 'N/A'}</td>
+                        <td>₹${product.price.toFixed(2)}</td>
+                        <td>${product.stock}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline" onclick="editProduct('${product._id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline" onclick="deleteProduct('${product._id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            productsTable.innerHTML = html;
+        }
+        
+        function loadOrders(page = 1, limit = 10) {
+            const searchQuery = searchOrdersInput.value.trim();
+            
+            let url = `${API_BASE_URL}/orders?page=${page}&limit=${limit}`;
+            if (searchQuery) {
+                url += `&search=${encodeURIComponent(searchQuery)}`;
+            }
+            
+            fetch(url, {
+                headers: {
+                    'Authorization': `Bearer ${currentToken}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch orders');
+                }
+                return response.json();
+            })
+            .then(data => {
+                updateOrdersTable(data.orders);
+                updatePagination(ordersPagination, data, page, 'orders');
+            })
+            .catch(error => {
+                console.error('Error loading orders:', error);
+                ordersTable.innerHTML = '<tr><td colspan="7" class="text-center">Failed to load orders</td></tr>';
+            });
+        }
+        
+        function updateOrdersTable(orders) {
+            if (!orders || orders.length === 0) {
+                ordersTable.innerHTML = '<tr><td colspan="7" class="text-center">No orders found</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            orders.forEach(order => {
+                html += `
+                    <tr>
+                        <td>${order._id}</td>
+                        <td>${order.customerName}</td>
+                        <td>${order.storeId?.storeName || 'N/A'}</td>
+                        <td>${new Date(order.orderDate).toLocaleDateString()}</td>
+                        <td>₹${order.totalAmount.toFixed(2)}</td>
+                        <td><span class="badge ${getStatusBadgeClass(order.status)}">${order.status}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline" onclick="updateOrderStatus('${order._id}', '${order.status}')">
+                                <i class="fas fa-sync"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline" onclick="viewOrderDetails('${order._id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            ordersTable.innerHTML = html;
+        }
+        
+        function updatePagination(element, data, currentPage, section) {
+            if (!element) return;
+            
+            const totalPages = data.totalPages || 1;
+            
+            let html = '';
+            
+            // Previous button
+            html += `
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="load${capitalizeFirstLetter(section)}(${currentPage - 1}); return false;">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                </li>
+            `;
+            
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                html += `
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="load${capitalizeFirstLetter(section)}(${i}); return false;">${i}</a>
+                    </li>
+                `;
+            }
+            
+            // Next button
+            html += `
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="load${capitalizeFirstLetter(section)}(${currentPage + 1}); return false;">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            `;
+            
+            element.innerHTML = html;
+        }
+        
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        
+        function loadAdminSettings() {
+            if (!currentAdmin) return;
+            
+            document.getElementById('admin-email').value = currentAdmin.email || '';
+            document.getElementById('admin-password').value = '';
+            document.getElementById('confirm-password').value = '';
+        }
+        
+        function updateAdminSettings() {
+            const email = document.getElementById('admin-email').value.trim();
+            const password = document.getElementById('admin-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (password && password !== confirmPassword) {
+                showError('Passwords do not match');
+                return;
+            }
+            
+            const data = {
+                email,
+                currentPassword: password ? document.getElementById('admin-password').value : undefined,
+                newPassword: password || undefined
+            };
+            
+            fetch(`${API_BASE_URL}/settings`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${currentToken}`
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to update settings');
+                }
+                return response.json();
+            })
+            .then(data => {
+                showSuccess('Settings updated successfully');
+                currentAdmin = data.admin;
+                adminNameElement.textContent = currentAdmin.fullname || 'Admin';
+            })
+            .catch(error => {
+                console.error('Error updating settings:', error);
+                showError('Failed to update settings');
+            });
+        }
+        
+        function logoutAdmin() {
+            localStorage.removeItem('adminToken');
+            redirectToLogin();
+        }
+        
+        function redirectToLogin() {
+            window.location.href = 'login.html';
+        }
+        
+        function showSuccess(message) {
+            alert(message); // Replace with a proper notification system
+        }
+        
+        function showError(message) {
+            alert(message); // Replace with a proper notification system
+        }
+        
+        function debounce(func, timeout = 300) {
+            let timer;
+            return (...args) => {
+                clearTimeout(timer);
+                timer = setTimeout(() => { func.apply(this, args); }, timeout);
+            };
+        }
+        
+        // Expose functions to global scope for onclick handlers
+        window.loadUsers = loadUsers;
+        window.loadSellers = loadSellers;
+        window.loadStores = loadStores;
+        window.loadProducts = loadProducts;
+        window.loadOrders = loadOrders;
+        
+        window.editUser = function(userId) {
+            // Implement user edit functionality
+            console.log('Edit user:', userId);
+        };
+        
+        window.deleteUser = function(userId) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                fetch(`${API_BASE_URL}/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to delete user');
+                    }
+                    return response.json();
+                })
+                .then(() => {
+                    showSuccess('User deleted successfully');
+                    loadUsers();
+                })
+                .catch(error => {
+                    console.error('Error deleting user:', error);
+                    showError('Failed to delete user');
+                });
+            }
+        };
+        
+        window.editSeller = function(sellerId) {
+            // Implement seller edit functionality
+            console.log('Edit seller:', sellerId);
+        };
+        
+        window.deleteSeller = function(sellerId) {
+            if (confirm('Are you sure you want to delete this seller?')) {
+                fetch(`${API_BASE_URL}/sellers/${sellerId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to delete seller');
+                    }
+                    return response.json();
+                })
+                .then(() => {
+                    showSuccess('Seller deleted successfully');
+                    loadSellers();
+                })
+                .catch(error => {
+                    console.error('Error deleting seller:', error);
+                    showError('Failed to delete seller');
+                });
+            }
+        };
+        
+        window.editStore = function(storeId) {
+            // Implement store edit functionality
+            console.log('Edit store:', storeId);
+        };
+        
+        window.updateStoreStatus = function(storeId, currentStatus) {
+            const newStatus = prompt('Enter new status (active, inactive, suspended):', currentStatus);
+            
+            if (newStatus && ['active', 'inactive', 'suspended'].includes(newStatus.toLowerCase())) {
+                fetch(`${API_BASE_URL}/stores/${storeId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: JSON.stringify({ status: newStatus.toLowerCase() })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to update store status');
+                    }
+                    return response.json();
+                })
+                .then(() => {
+                    showSuccess('Store status updated successfully');
+                    loadStores();
+                })
+                .catch(error => {
+                    console.error('Error updating store status:', error);
+                    showError('Failed to update store status');
+                });
+            }
+        };
+        
+        window.editProduct = function(productId) {
+            // Implement product edit functionality
+            console.log('Edit product:', productId);
+        };
+        
+        window.deleteProduct = function(productId) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                fetch(`${API_BASE_URL}/products/${productId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to delete product');
+                    }
+                    return response.json();
+                })
+                .then(() => {
+                    showSuccess('Product deleted successfully');
+                    loadProducts();
+                })
+                .catch(error => {
+                    console.error('Error deleting product:', error);
+                    showError('Failed to delete product');
+                });
+            }
+        };
+        
+        window.updateOrderStatus = function(orderId, currentStatus) {
+            const newStatus = prompt('Enter new status (Pending, Processing, Shipped, Delivered, Cancelled):', currentStatus);
+            
+            if (newStatus && ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'].includes(newStatus)) {
+                fetch(`${API_BASE_URL}/orders/${orderId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to update order status');
+                    }
+                    return response.json();
+                })
+                .then(() => {
+                    showSuccess('Order status updated successfully');
+                    loadOrders();
+                })
+                .catch(error => {
+                    console.error('Error updating order status:', error);
+                    showError('Failed to update order status');
+                });
+            }
+        };
+        
+        window.viewOrderDetails = function(orderId) {
+            // Implement order details view
+            console.log('View order details:', orderId);
+        };
+    });
+
+        function showError(message) {
+            alert(message); // Replace with a proper notification system
+        }
+        
+        function checkAdminAuth() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                console.log('No token found - redirecting to login');
+                redirectToLogin();
+                return;
+            }
+
+            // Set the token and proceed without verification for now
+            // This assumes the token is valid if it exists in localStorage
+            console.log('Token found - proceeding');
+            currentToken = token;
+            fetchAdminProfile();
+        }
+
+        function verifyAdminToken(token) {
+            return fetch(`${API_BASE_URL}/verify-token`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return false;
+                }
+                return response.json()
+                    .then(data => data.valid || false);
+            })
+            .catch(() => false);
+        }
+</script>
+</body>
+
+</html>

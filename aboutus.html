@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Marketplace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom right, #1f2937, #5b21b6, #000);
+            color: white;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header, footer {
+            padding: 1.5rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        header h1 {
+            margin: 0 0 0.5rem;
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: linear-gradient(to right, #60a5fa, #8b5cf6);
+        }
+
+        .about-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.75rem;
+        }
+
+        .about-section {
+            margin-bottom: 2rem;
+        }
+
+        .about-section h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            display: flex;
+        }
+
+        .about-section p {
+            margin-bottom: 1rem;
+        }
+
+        .about-section img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .team-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .team-member {
+            width: 45%;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .team-member img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .team-member {
+                width: 100%;
+            }
+        }
+
+        footer {
+            color: #e5e7eb;
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>About Us - Marketplace</h1>
+    </header>
+
+    <div class="about-container">
+        <section class="about-section">
+            <h2>Our Story</h2>
+            <img src="images/user.png" alt="Our Tailor Shop" style="height: 50px;">
+            <p>Welcome to Marketplace, where craftsmanship meets passion. We've been dedicated to providing high-quality tailoring services for [Number] years. Our journey began with a simple vision: to create garments that fit perfectly and reflect the unique style of each individual.</p>
+            <p>From custom suits to elegant dresses, our team of skilled tailors pays attention to every detail, ensuring your complete satisfaction. We believe in the art of tailoring and strive to bring your vision to life.</p>
+        </section>
+
+        <section class="about-section">
+            <h2>Our Values</h2>
+            <p>At Marketplace, we are committed to:</p>
+            <ul>
+                <li>Quality Craftsmanship</li>
+                <li>Personalized Service</li>
+                <li>Attention to Detail</li>
+                <li>Customer Satisfaction</li>
+            </ul>
+        </section>
+
+        <section class="about-section team-section">
+            <h2>Meet Our Team</h2>
+            <div class="team-member">
+                <img src="images/profile-user.png" alt="Team Member 1" style="width: 50px; height: 50px;">
+                <h3>Team Member 1 Name</h3>
+                
+            </div>
+            <div class="team-member">
+                <img src="images/profile-user.png" alt="Team Member 2" style="width: 50px; height: 50px;">
+                <h3>Team Member 2 Name</h3>
+                
+            </div>
+            </section>
+    </div>
+
+    <footer>
+        &copy; 2025 Tailor Stores. All rights reserved.
+    </footer>
+</body>
+</html>

@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Business Dashboard</title>
+    <meta name="theme-color" content="#2c3e50" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: linear-gradient(to bottom right, #1f2937, #5b21b6, #000000);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            height: 100vh;
+        }
+
+        .sidebar {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            height: 100%;
+        }
+
+        .sidebar h2 {
+            margin: 0 0 20px;
+            font-size: 1.5rem;
+        }
+
+        .sidebar nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar nav ul li {
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .sidebar nav ul li:hover {
+            color: #9ea7ff;
+        }
+
+        .store-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .store-details {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .store-card {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            min-width: 400px;
+        }
+
+        .store-info {
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .store-text a {
+            text-decoration: none;
+            color: white;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .store-text a:hover {
+            color: #6d97f1;
+            text-decoration: underline;
+        }
+
+        .store-logo {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .store-text h3 {
+            margin-bottom: 5px;
+        }
+
+        .store-actions {
+            margin-left: auto;
+        }
+
+        main.main-content {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            overflow-y: auto;
+        }
+
+        .section {
+            display: none;
+
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .store-form {
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            margin: 70px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        textarea,
+        input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        .product-table {
+            width: 90%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            margin: 70px;
+        }
+
+        .product-table th,
+        .product-table td {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .product-table th {
+            background: #2c3e50;
+            border-radius: 8px;
+            color: #ffffff;
+        }
+
+        .product-table tbody tr:nth-child(odd) {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .btn {
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            color: #ffffff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: #75b1ff;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        <div class="sidebar">
+            <h2>Marketplace</h2>
+            <nav>
+                <ul class="nav-list">
+                    <li class="nav-item" data-section="store-front">Store Front</li>
+                    <li class="nav-item" data-section="products">Products</li>
+                    <li class="nav-item" data-section="orders">Orders</li>
+                </ul>
+            </nav>
+            <button id="logout-btn" class="btn" style="margin-top: auto; margin-bottom: 20px;">Logout</button>
+        </div>
+
+        <!-- Store Front Section -->
+        <section id="store-front" class="section active">
+            <div class="store-container">
+                <main class="store-details">
+                    <div class="store-card" id="store-card">
+                        <div class="store-info">
+                            <img id="store-logo" class="store-logo" src="" alt="Store Logo">
+                            <div class="store-text">
+                                <h3 id="store-name">Loading store information...</h3>
+                                <a id="store-link" href="#">Loading...</a>
+                            </div>
+                        </div>
+                        <div class="store-actions">
+                            <button class="btn edit-btn">Edit</button>
+                            <button class="btn delete-btn">Delete</button>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </section>
+
+        <!-- Products Section -->
+        <section id="products" class="section" aria-labelledby="products-heading">
+            <h2 id="products-heading" style="margin: 70px;">Products</h2>
+            <table class="product-table" id="product-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Handmade Soap</td>
+                        <td>Natural ingredients</td>
+                        <td>₹50.00</td>
+                        <td>50</td>
+                        <td>
+                            <button class="btn btn-small edit-btn">Edit</button>
+                            <button class="btn btn-small delete-btn">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="store-form">
+                <h3>Add New Product</h3>
+                <div class="form-group">
+                    <label for="product-name">Product Name</label>
+                    <input type="text" id="product-name" placeholder="Product Name" />
+                </div>
+                <div class="form-group">
+                    <label for="product-description">Product Description</label>
+                    <input type="text" id="product-description" placeholder="Product Description" />
+                </div>
+                <div class="form-group">
+                    <label for="product-price">Price</label>
+                    <input type="text" id="product-price" placeholder="Price" />
+                </div>
+                <div class="form-group">
+                    <label for="product-stock">Stock</label>
+                    <input type="text" id="product-stock" placeholder="Stock" />
+                </div>
+                <div class="form-group">
+                    <label for="product-image">Upload Pictures</label>
+                    <input type="file" id="product-image" />
+                </div>
+                <button class="btn" id="add-product-btn">Add Product</button>
+            </div>
+        </section>
+
+        <!-- Orders Section -->
+        <section id="orders" class="section" aria-labelledby="orders-heading">
+            <h2 id="orders-heading" style="margin: 70px;">Orders</h2>
+            <table class="product-table" id="orders-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Product</th>
+                        <th>Customer</th>
+                        <th>Phone</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-body">
+                    <!-- Orders will be populated here -->
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000';
+        let products = [];
+        let currentStore = null;
+        let orders = [];
+
+        // Move this function outside the DOMContentLoaded event listener
+        function updateStoreDisplay() {
+            if (!currentStore) return;
+
+            const storeNameElement = document.getElementById('store-name');
+            const storeLinkElement = document.getElementById('store-link');
+            const storeLogoElement = document.getElementById('store-logo');
+
+            storeNameElement.textContent = currentStore.storeName || 'Marketplace';
+
+            const storeUrl = `${window.location.protocol}//${window.location.host}/store_customer.html?store=${currentStore._id || currentStore.id}`;
+            storeLinkElement.textContent = currentStore.storeName ?
+                `${currentStore.storeName.toLowerCase().replace(/\s+/g, '-')}.com` :
+                'my-store.com';
+            storeLinkElement.href = storeUrl;
+
+            if (currentStore.logoImage) {
+                storeLogoElement.src = currentStore.logoImage;
+                storeLogoElement.style.background = 'transparent';
+            } else {
+                storeLogoElement.src = 'images/store.png';
+                storeLogoElement.style.background = 'white';
+                storeLogoElement.textContent = currentStore.storeName ?
+                    currentStore.storeName.charAt(0).toUpperCase() : 'S';
+            }
+
+            const sidebarTitle = document.querySelector('.sidebar h2');
+            if (sidebarTitle && currentStore.storeName) {
+                sidebarTitle.textContent = currentStore.storeName;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            // Remove the updateStoreDisplay function from here
+            await loadStoreData();
+            fetchProducts();
+
+            function showSection(sectionId) {
+                document.querySelectorAll(".section").forEach((section) => {
+                    section.classList.remove("active");
+                });
+                document.getElementById(sectionId).classList.add("active");
+            }
+
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
+
+            async function loadStoreData() {
+                try {
+                    const storedStore = localStorage.getItem('currentStore');
+                    if (storedStore) {
+                        currentStore = JSON.parse(storedStore);
+                        updateStoreDisplay();
+                        return;
+                    }
+
+                    const seller = JSON.parse(localStorage.getItem('seller'));
+                    if (!seller || !seller.id) {
+                        console.error('No seller logged in');
+                        return;
+                    }
+
+                    const response = await fetch(`${API_BASE_URL}/api/stores?sellerId=${seller.id}`);
+                    if (!response.ok) throw new Error('Failed to fetch store data');
+
+                    const stores = await response.json();
+                    if (stores.length > 0) {
+                        currentStore = stores[0];
+                        localStorage.setItem('currentStore', JSON.stringify(currentStore));
+                        updateStoreDisplay();
+                    }
+                } catch (error) {
+                    console.error('Error loading store data:', error);
+                    document.getElementById('store-name').textContent = 'Error loading store information';
+                }
+            }
+
+            function updateStoreDisplay() {
+                if (!currentStore) return;
+
+                const storeNameElement = document.getElementById('store-name');
+                const storeLinkElement = document.getElementById('store-link');
+                const storeLogoElement = document.getElementById('store-logo');
+
+                storeNameElement.textContent = currentStore.storeName || 'Marketplace';
+
+                const storeUrl = `${window.location.protocol}//${window.location.host}/store_customer.html?store=${currentStore._id || currentStore.id}`;
+                storeLinkElement.textContent = currentStore.storeName ?
+                    `${currentStore.storeName.toLowerCase().replace(/\s+/g, '-')}.com` :
+                    'my-store.com';
+                storeLinkElement.href = storeUrl;
+
+                if (currentStore.logoImage) {
+                    storeLogoElement.src = currentStore.logoImage;
+                    storeLogoElement.style.background = 'transparent';
+                } else {
+                    storeLogoElement.src = 'images/store.png';
+                    storeLogoElement.style.background = 'white';
+                    storeLogoElement.textContent = currentStore.storeName ?
+                        currentStore.storeName.charAt(0).toUpperCase() : 'S';
+                }
+
+                const sidebarTitle = document.querySelector('.sidebar h2');
+                if (sidebarTitle && currentStore.storeName) {
+                    sidebarTitle.textContent = currentStore.storeName;
+                }
+            }
+
+            loadStoreData();
+            fetchProducts();
+
+            document.querySelectorAll(".sidebar nav ul li").forEach((navItem) => {
+                navItem.addEventListener("click", async () => {
+                    const sectionId = navItem.getAttribute("data-section");
+                    showSection(sectionId);
+
+                    // Load data when section is shown
+                    if (sectionId === 'orders') {
+                        await loadStoreData();
+                        await renderOrders();
+                    } else if (sectionId === 'analytics') {
+                        await loadStoreData();
+                        await renderAnalytics();
+                    }
+                });
+            });
+
+            const addProductBtn = document.getElementById("add-product-btn");
+            const productTableBody = document.querySelector("#product-table tbody");
+
+            async function fetchProducts() {
+                try {
+                    if (!currentStore) {
+                        await loadStoreData();
+                        if (!currentStore) {
+                            console.error('No store available for this seller');
+                            return;
+                        }
+                    }
+
+                    const response = await fetch(`${API_BASE_URL}/api/products?storeId=${currentStore._id}`);
+                    if (!response.ok) throw new Error('Failed to fetch products');
+                    products = await response.json();
+                    renderProducts();
+                } catch (error) {
+                    console.error('Error fetching products:', error);
+                    alert('Error loading products. Please try again.');
+                }
+            }
+
+            function renderProducts() {
+                productTableBody.innerHTML = '';
+
+                if (products.length === 0) {
+                    productTableBody.innerHTML = '<tr><td colspan="5">No products found for this store</td></tr>';
+                    return;
+                }
+
+                products.forEach(product => {
+                    const row = document.createElement("tr");
+                    row.setAttribute('data-id', product._id);
+                    row.innerHTML = `
+            <td>
+                ${product.image ?
+                            `<img src="${API_BASE_URL}${product.image}" alt="${product.name}" style="width:50px;height:50px;object-fit:cover;">` :
+                            '<div style="width:50px;height:50px;background:#ddd;"></div>'
+                        }
+                ${product.name}
+            </td>
+            <td>${product.description}</td>
+            <td>₹${product.price}</td>
+            <td>${product.stock}</td>
+            <td>
+                <button class="btn btn-small edit-btn">Edit</button>
+                <button class="btn btn-small delete-btn">Delete</button>
+            </td>
+        `;
+                    productTableBody.appendChild(row);
+                });
+                attachEventListeners();
+            }
+
+            addProductBtn.addEventListener("click", async () => {
+                const nameInput = document.getElementById("product-name");
+                const descriptionInput = document.getElementById("product-description");
+                const priceInput = document.getElementById("product-price");
+                const stockInput = document.getElementById("product-stock");
+                const imageInput = document.getElementById("product-image");
+
+                const productName = nameInput.value.trim();
+                const productDescription = descriptionInput.value.trim();
+                const productPrice = priceInput.value.trim();
+                const productStock = stockInput.value.trim();
+                const productImage = imageInput.files[0];
+
+                if (!productName || !productPrice || !productStock || !productDescription) {
+                    alert("Please fill in all product fields.");
+                    return;
+                }
+
+                if (!currentStore || !currentStore._id) {
+                    alert("No store selected. Please create or select a store first.");
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('name', productName);
+                formData.append('description', productDescription);
+                formData.append('price', productPrice);
+                formData.append('stock', productStock);
+                formData.append('storeId', currentStore._id);
+
+                if (productImage) {
+                    formData.append('image', productImage);
+                }
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/products`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Failed to add product');
+                    }
+
+                    const newProduct = await response.json();
+                    products.push(newProduct);
+                    renderProducts();
+
+                    nameInput.value = "";
+                    descriptionInput.value = "";
+                    priceInput.value = "";
+                    stockInput.value = "";
+                    imageInput.value = "";
+
+                    alert("Product added successfully!");
+                } catch (error) {
+                    console.error('Error adding product:', error);
+                    alert(`Error adding product: ${error.message}`);
+                }
+            });
+
+            async function deleteProduct(productId) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/products/${productId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (!response.ok) throw new Error('Failed to delete product');
+
+                    products = products.filter(p => p._id !== productId);
+                    renderProducts();
+                } catch (error) {
+                    console.error('Error deleting product:', error);
+                    alert('Error deleting product. Please try again.');
+                }
+            }
+
+            function editProduct(productId) {
+                const product = products.find(p => p._id === productId);
+                if (!product) return;
+
+                const newName = prompt("Enter new product name:", product.name);
+                if (newName === null) return;
+
+                const newDescription = prompt("Enter new product description:", product.description);
+                if (newDescription === null) return;
+
+                const newPrice = prompt("Enter new price:", product.price);
+                if (newPrice === null) return;
+
+                const newStock = prompt("Enter new stock:", product.stock);
+                if (newStock === null) return;
+
+                updateProduct(productId, {
+                    name: newName,
+                    description: newDescription,
+                    price: newPrice,
+                    stock: newStock
+                });
+            }
+
+            async function updateProduct(productId, updates) {
+                try {
+                    const formData = new FormData();
+                    formData.append('name', updates.name);
+                    formData.append('description', updates.description);
+                    formData.append('price', updates.price);
+                    formData.append('stock', updates.stock);
+
+                    if (updates.image) {
+                        formData.append('image', updates.image);
+                    }
+
+                    const response = await fetch(`${API_BASE_URL}/api/products/${productId}`, {
+                        method: 'PUT',
+                        body: formData
+                    });
+
+                    if (!response.ok) throw new Error('Failed to update product');
+
+                    const updatedProduct = await response.json();
+                    products = products.map(p => p._id === productId ? updatedProduct : p);
+                    renderProducts();
+                } catch (error) {
+                    console.error('Error updating product:', error);
+                    alert('Error updating product. Please try again.');
+                }
+            }
+
+            function editProduct(productId) {
+                const product = products.find(p => p._id === productId);
+                if (!product) return;
+
+                const newName = prompt("Enter new product name:", product.name);
+                if (newName === null) return;
+
+                const newDescription = prompt("Enter new product description:", product.description);
+                if (newDescription === null) return;
+
+                const newPrice = prompt("Enter new price:", product.price);
+                if (newPrice === null) return;
+
+                const newStock = prompt("Enter new stock:", product.stock);
+                if (newStock === null) return;
+
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+
+                input.onchange = e => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        updateProduct(productId, {
+                            name: newName,
+                            description: newDescription,
+                            price: newPrice,
+                            stock: newStock,
+                            image: file
+                        });
+                    }
+                };
+
+                input.click();
+            }
+
+            function attachEventListeners() {
+                document.querySelectorAll(".delete-btn").forEach((btn) => {
+                    btn.addEventListener("click", (e) => {
+                        const row = e.target.closest("tr");
+                        const productId = row.getAttribute('data-id');
+                        if (confirm("Are you sure you want to delete this product?")) {
+                            deleteProduct(productId);
+                        }
+                    });
+                });
+
+                document.querySelectorAll(".edit-btn").forEach((btn) => {
+                    btn.addEventListener("click", (e) => {
+                        const row = e.target.closest("tr");
+                        const productId = row.getAttribute('data-id');
+                        editProduct(productId);
+                    });
+                });
+            }
+            fetchProducts();
+        });
+
+        document.querySelector('.store-actions .edit-btn')?.addEventListener('click', () => {
+            if (!currentStore) return;
+
+            const newName = prompt("Enter new store name:", currentStore.storeName);
+            if (newName === null || newName.trim() === '') return;
+
+            const newDesc = prompt("Enter new store description:", currentStore.description || '');
+
+            updateStoreInfo({
+                storeName: newName,
+                description: newDesc
+            });
+        });
+
+        async function updateStoreInfo(updates) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/stores/${currentStore._id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updates)
+                });
+
+                if (!response.ok) throw new Error('Failed to update store');
+
+                const updatedStore = await response.json();
+                currentStore = { ...currentStore, ...updatedStore };
+                localStorage.setItem('currentStore', JSON.stringify(currentStore));
+                updateStoreDisplay();
+            } catch (error) {
+                console.error('Error updating store:', error);
+                alert('Error updating store. Please try again.');
+            }
+        }
+
+        document.querySelector('.store-actions .delete-btn')?.addEventListener('click', () => {
+            if (!currentStore) return;
+
+            if (confirm("Are you sure you want to delete this store? This action cannot be undone.")) {
+                deleteStore();
+            }
+        });
+
+        async function deleteStore() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/stores/${currentStore._id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) throw new Error('Failed to delete store');
+
+                localStorage.removeItem('currentStore');
+                currentStore = null;
+                updateStoreDisplay();
+                alert('Store deleted successfully');
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Error deleting store:', error);
+                alert('Error deleting store. Please try again.');
+            }
+        }
+
+        async function fetchOrders() {
+            try {
+                if (!currentStore) {
+                    await loadStoreData();
+                    if (!currentStore) {
+                        console.error('No store available for this seller');
+                        return [];
+                    }
+                }
+
+                const storeId = currentStore._id || currentStore.id;
+                if (!storeId) {
+                    console.error('Invalid store ID');
+                    return [];
+                }
+
+                const response = await fetch(`${API_BASE_URL}/api/orders?storeId=${storeId}`);
+                if (!response.ok) throw new Error('Failed to fetch orders');
+
+                const orders = await response.json();
+                return orders;
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+                return [];
+            }
+        }
+
+        async function renderOrders() {
+            const ordersBody = document.getElementById('orders-body');
+            try {
+                ordersBody.innerHTML = '<tr><td colspan="8">Loading orders...</td></tr>';
+
+                const orders = await fetchOrders();
+
+                if (!orders || !Array.isArray(orders) || orders.length === 0) {
+                    ordersBody.innerHTML = '<tr><td colspan="8">No orders found for this store</td></tr>';
+                    return;
+                }
+
+                ordersBody.innerHTML = orders.map(order => {
+                    const productNames = order.products.map(p => p.name).join(', ');
+
+                    const totalPrice = order.products.reduce((sum, product) => {
+                        return sum + (product.price * product.quantity);
+                    }, 0);
+
+                    const customerInfo = order.customerName ?
+                        `${order.customerName}<br>${order.customerEmail}` :
+                        order.customerEmail || '';
+
+                    return `
+                <tr data-id="${order._id}">
+                    <td>${order._id.substring(0, 8)}...</td>
+                    <td>${productNames}</td>
+                    <td>${customerInfo}</td>
+                    <td>${order.customerPhone || 'N/A'}</td>
+                    <td>₹${totalPrice.toFixed(2)}</td>
+                    <td>
+                        <select class="status-select" data-id="${order._id}">
+                            <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                            <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                            <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                            <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                            <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                        </select>
+                    </td>
+                    <td>${new Date(order.orderDate).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-small view-btn">Submit</button>
+                        <button class="btn btn-small delete-btn">Delete</button>
+                    </td>
+                </tr>
+            `;
+                }).join('');
+
+                document.querySelectorAll('.status-select').forEach(select => {
+                    select.addEventListener('change', async (e) => {
+                        const orderId = e.target.getAttribute('data-id');
+                        const newStatus = e.target.value;
+                        await updateOrderStatus(orderId, newStatus);
+                    });
+                });
+
+                document.querySelectorAll('#orders-body .delete-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const orderId = e.target.closest('tr').getAttribute('data-id');
+                        if (confirm('Are you sure you want to delete this order?')) {
+                            await deleteOrder(orderId);
+                            await renderOrders();
+                        }
+                    });
+                });
+
+            } catch (error) {
+                console.error('Error rendering orders:', error);
+                ordersBody.innerHTML = '<tr><td colspan="8">Error loading orders. Please try again.</td></tr>';
+            }
+        }
+
+        async function updateOrderStatus(orderId, newStatus) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                if (!response.ok) throw new Error('Failed to update order status');
+
+                const orderIndex = orders.findIndex(o => o._id === orderId);
+                if (orderIndex !== -1) {
+                    orders[orderIndex].status = newStatus;
+                }
+            } catch (error) {
+                console.error('Error updating order status:', error);
+                alert('Error updating order status. Please try again.');
+            }
+        }
+
+        async function deleteOrder(orderId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) throw new Error('Failed to delete order');
+            } catch (error) {
+                console.error('Error deleting order:', error);
+                throw error;
+            }
+        }
+
+        document.querySelector('[data-section="orders"]').addEventListener('click', renderOrders);
+    </script>
+</body>
+
+</html>

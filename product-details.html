@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: linear-gradient(to bottom right, #1f2937, #5b21b6, #000000);
+            color: white;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            position: absolute;
+            padding-left: 70px;
+        }
+
+        h2 {
+            text-align: center;
+            padding-top: 20px;
+            font-size: 40px;
+        }
+
+        .header-buttons {
+            position: absolute;
+            top: 60px;
+            right: 130px;
+            word-spacing: 20px;
+        }
+
+        .header-buttons a {
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            margin-left: 10px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .photo {
+            position: absolute;
+            height: 340px;
+            width: 300px;
+            margin: 100px 200px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 80px 40px;
+            text-align: center;
+        }
+
+        .photo img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .details {
+            position: absolute;
+            margin: 150px 850px;
+            height: 300px;
+            width: 400px;
+            padding: 20px 40px;
+        }
+
+        .button {
+            margin-top: 20px;
+        }
+
+        #add-to-cart-btn {
+            display: inline-block;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        #add-to-cart-btn:hover {
+            opacity: 0.9;
+        }
+
+        .loading-message {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .cart-link {
+            position: relative;
+        }
+
+        #cart-count {
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1><a href="customer.html" style="text-decoration: none; color: inherit;">Marketplace</a></h1>
+        <h2 id="product-welcome">Product Details</h2>
+        <div>
+            <div class="header-buttons">
+                <a href="customer.html">Home</a>
+                <a href="track-order.html">Track order</a>
+                <a href="#" id="back-to-store">Back to Store</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="photo" id="product-image-container">
+        <div class="loading-message">Loading product...</div>
+    </div>
+    <div class="details" id="product-details">
+        <h3 id="product-name">Product Name</h3>
+        <p id="product-description">Loading product details...</p>
+        <p id="product-price">Price: -</p>
+        <p id="product-stock">Availability: -</p><br><br>
+        <div class="button">
+            <button id="add-to-cart-btn">Buy now</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const API_BASE_URL = 'http://localhost:3000';
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('product');
+            let product; // Declare product variable at the top
+
+            // Get user from localStorage
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                alert('Please login to add items to cart');
+                window.location.href = 'login_customer.html';
+                return;
+            }
+
+            if (!productId) {
+                alert('No product specified');
+                window.location.href = 'store.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/products/${productId}`);
+                if (!response.ok) throw new Error('Failed to fetch product');
+
+                product = await response.json();
+
+                document.getElementById('product-name').textContent = product.name;
+                document.getElementById('product-description').textContent = product.description;
+                document.getElementById('product-price').textContent = `Price: ₹${product.price.toFixed(2)}`;
+                document.getElementById('product-stock').textContent = `Availability: ${product.stock > 0 ? 'In Stock' : 'Out of Stock'}`;
+
+                const imageContainer = document.getElementById('product-image-container');
+                if (product.image) {
+                    imageContainer.innerHTML = `<img src="${product.image}" alt="${product.name}" style="max-width: 100%; height: auto;">`;
+                } else {
+                    imageContainer.innerHTML = `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(to right, #8b5cf6, #3b82f6); color: white; font-size: 3rem; font-weight: bold; border-radius: 8px;">${product.name.charAt(0).toUpperCase()}</div>`;
+                }
+
+                // Add to cart functionality
+                document.getElementById('add-to-cart-btn').addEventListener('click', () => {
+                    window.location.href = `checkout.html?store=${product.storeId}&id=${product._id}&name=${encodeURIComponent(product.name)}&price=${product.price}&quantity=1`;
+                });
+
+                // Add back button functionality
+                document.getElementById('back-to-store').addEventListener('click', () => {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const storeId = urlParams.get('store');
+                    if (storeId) {
+                        window.location.href = `store_customer.html?store=${storeId}`;
+                    } else {
+                        window.location.href = 'customer.html';
+                    }
+                });
+
+                    // Update all product links to include store ID
+                    document.querySelectorAll('a[href^="product-details.html"]').forEach(link => {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const storeId = urlParams.get('store');
+                        if (storeId) {
+                            const href = new URL(link.href);
+                            href.searchParams.set('store', storeId);
+                            link.href = href.toString();
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error loading product details:', error);
+                }
+            });
+    </script>
+</body>
+
+</html>

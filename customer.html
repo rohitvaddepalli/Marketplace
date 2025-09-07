@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: linear-gradient(to bottom right, #1f2937, #5b21b6, #000000);
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            background: linear-gradient(to right, #8b5cf6, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 2.2rem;
+            margin: 40px 0 20px;
+            background: linear-gradient(to right, #8b5cf6, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header-buttons {
+            position: absolute;
+            margin-top: 20px;
+            right: 50px;
+
+        }
+
+        .header-buttons a {
+            padding: 10px 15px;
+            margin-left: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .store-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 32px;
+            padding: 20px 0;
+        }
+
+        .store-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 4px 6px rgba(0, 0, 0, 0.1),
+                0 2px 4px rgba(255, 0, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(5px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .store-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(139,92,246,0.2) 0%, rgba(139,92,246,0.05) 80%);
+            transform: rotate(25deg);
+            z-index: 0;
+        }
+
+        .store-card .store-image {
+            position: relative;
+            z-index: 1;
+        }
+
+        .store-card a {
+            position: relative;
+            z-index: 1;
+            text-decoration: none;
+            background: linear-gradient(to right, #a855f7, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 600;
+            font-size: 1.3rem;
+            display: block;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+
+        .store-card a:hover {
+            transform: translateY(-3px);
+        }
+
+        .store-card p {
+            position: relative;
+            z-index: 1;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.95rem;
+            margin-top: 12px;
+        }
+
+        .loading-message,
+        .empty-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.75);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <h1><a href="customer.html" style="text-decoration: none; color: inherit;">Marketplace</a></h1>
+            <div class="header-buttons">
+                <a href="customer.html">Home</a>
+                <a href="track-order.html">Track order</a>
+                <a href="index.html">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <h2>Featured Stores</h2>
+        <div class="store-grid" id="store-grid">
+            <!-- Stores will be loaded here dynamically -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const API_BASE_URL = 'http://localhost:3000';
+            const storeGrid = document.getElementById('store-grid');
+
+            // Fetch all stores from the server
+            async function fetchStores() {
+                try {
+                    storeGrid.innerHTML = '<div class="loading-message">Loading stores...</div>';
+
+                    const response = await fetch(`${API_BASE_URL}/api/stores`);
+                    if (!response.ok) throw new Error('Failed to fetch stores');
+
+                    const stores = await response.json();
+
+                    if (stores.length === 0) {
+                        storeGrid.innerHTML = '<div class="empty-message">No stores available at the moment. Please check back later.</div>';
+                        return [];
+                    }
+
+                    return stores;
+                } catch (error) {
+                    console.error('Error fetching stores:', error);
+                    storeGrid.innerHTML = `<div class="empty-message">Error loading stores: ${error.message}</div>`;
+                    return [];
+                }
+            }
+
+            // Render stores to the grid
+            async function renderStores() {
+                const stores = await fetchStores();
+
+                if (stores.length === 0) return;
+
+                storeGrid.innerHTML = '';
+
+                stores.forEach(store => {
+                    const storeCard = document.createElement('div');
+                    storeCard.className = 'store-card';
+
+                    // Create a URL-friendly version of the store name
+                    const storeUrl = store.storeName.toLowerCase().replace(/\s+/g, '-');
+
+                    storeCard.innerHTML = `
+                        ${store.logoImage ?
+                            `<img src="${store.logoImage}" alt="${store.storeName}" 
+                                style="width:100px;height:100px;border-radius:50%;object-fit:cover;
+                                margin:0 auto 15px;display:block;border:2px solid rgba(255,255,255,0.1);">` :
+                            `<div style="width:100px;height:100px;border-radius:50%;background:rgba(139, 92, 246, 0.3);
+                                margin:0 auto 15px;display:flex;align-items:center;justify-content:center;
+                                font-size:2rem;font-weight:bold;border:2px solid rgba(255,255,255,0.1);">
+                                ${store.storeName.charAt(0).toUpperCase()}
+                            </div>`
+                        }
+                        <a href="store_customer.html?store=${store._id}">${store.storeName}</a>
+                        ${store.description ? `<p>${store.description}</p>` : ''}
+                    `;
+
+                    storeGrid.appendChild(storeCard);
+                });
+            }
+
+            // Update the header with the first store's name if available
+            async function updateHeader() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/stores/latest`);
+                    if (!response.ok) return;
+
+                    const store = await response.json();
+                    if (store.storeName) {
+                        storeHeader.textContent = store.storeName;
+                    }
+                } catch (error) {
+                    console.error('Error updating header:', error);
+                }
+            }
+
+            // Initialize
+            renderStores();
+            updateHeader();
+        });
+    </script>
+</body>
+
+</html>

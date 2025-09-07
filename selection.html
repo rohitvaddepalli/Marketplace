@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Role - Marketplace</title>
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: linear-gradient(to bottom right, #1f2937, #5b21b6, #000000);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Header */
+        header {
+            color: white;
+            padding: 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        header .breadcrumbs {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        header .breadcrumbs a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        header .breadcrumbs a:hover {
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .container h2 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #9fa5ff, #cb6ce6);
+            -webkit-background-clip: text;
+			background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container p {
+            max-width: 600px;
+            margin: 0 auto 30px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        /* Profiles */
+        .profiles {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-container:hover {
+            transform: translateY(-10px);
+        }
+
+        .profile {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            text-align: center;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1),
+                        inset 0 0 0 2px rgba(255, 255, 255, 0.1);
+        }
+
+        .profile:hover {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2),
+                        inset 0 0 0 3px rgba(255, 255, 255, 0.2);
+        }
+
+        .customer-profile {
+            background: linear-gradient(145deg, rgba(59, 130, 246, 0.2), rgba(96, 165, 250, 0.05));
+        }
+
+        .business-profile {
+            background: linear-gradient(145deg, rgba(139, 92, 246, 0.2), rgba(167, 139, 250, 0.05));
+        }
+
+        .profile img {
+            max-width: 50%;
+            max-height: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .profile:hover img {
+            transform: scale(1.1);
+        }
+
+        .profile-name {
+            margin-top: 20px;
+            font-size: 1.4em;
+            font-weight: 600;
+            color: white;
+        }
+
+        .profile-description {
+            margin-top: 10px;
+            max-width: 200px;
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .profile-link {
+            margin-top: 15px;
+            display: inline-block;
+            padding: 8px 20px;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            color: white;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9em;
+        }
+
+        footer a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        footer a:hover {
+            color: white;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .profiles {
+                flex-direction: column;
+                gap: 40px;
+            }
+            
+            .profile {
+                width: 140px;
+                height: 140px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="index.html" style= "color: white; text-decoration: none;">Marketplace</a></h1>
+        <div class="breadcrumbs">
+            <a href="index.html">Home</a> &gt; Choose Your Role
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="container">
+            <h2>Choose Your Role</h2>
+            <p>Select how you would like to use our platform. Whether you're looking to shop or sell, we've got you covered.</p>
+            
+            <div class="profiles">
+                <div class="profile-container">
+                    <div class="profile customer-profile">
+						<a href="login_customer.html">
+							<img src="images/user.png" alt="Customer">
+						</a>
+                    </div>
+                    <div class="profile-name">Customer</div>
+                    <div class="profile-description">Find unique products from verified sellers and shop with confidence</div>
+                </div>
+                
+                <div class="profile-container">
+                    <div class="profile business-profile">
+                        <a href="seller-login.html">
+							<img src="images/seller.png" alt="Business">
+						</a>
+                    </div>
+                    <div class="profile-name">Business</div>
+                    <div class="profile-description">Create your store, sell products, and grow your business online</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Marketplace. All rights reserved.</p>
+    </footer>
+</body>
+</html>

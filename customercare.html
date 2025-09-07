@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Care - Marketplace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom right, #1f2937, #5b21b6, #000);
+            color: white;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header,
+        footer {
+            padding: 1.5rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        header h1 {
+            margin: 0 0 0.5rem;
+            font-size: 2.25rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #60a5fa, #8b5cf6);
+            background-clip: text;
+            color: transparent;
+        }
+
+        .customer-care-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.75rem;
+        }
+
+        .contact-section {
+            margin-bottom: 2rem;
+        }
+
+        .contact-section h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .contact-section a {
+            color: #cadffa;
+            text-decoration: none;
+        }
+
+        .contact-section p {
+            margin-bottom: 1rem;
+        }
+
+        .contact-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .contact-section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .contact-form label {
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border-radius: 0.5rem;
+        }
+
+        .contact-form button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            border: none;
+        }
+
+        .contact-form button:hover {
+            opacity: 0.9;
+        }
+
+        footer {
+            color: #e5e7eb;
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Customer Care - Marketplace</h1>
+    </header>
+
+    <div class="customer-care-container">
+        <section class="contact-section">
+            <h2>Contact Us</h2>
+            <p>We're here to help! If you have any questions or need assistance, please feel free to contact us.</p>
+            <ul>
+                <li>Email: <a href="mailto:support@mystore.com">support@mystore.com</a></li>
+                <li>Phone: +1 (555) 123-4567</li>
+                <li>Address: 123 Main Street, City, Country</li>
+            </ul>
+        </section>
+
+        <section class="contact-section">
+            <h2>Send Us a Message</h2>
+            <form class="contact-form">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" rows="4" required></textarea>
+
+                <button type="submit">Send Message</button>
+            </form>
+        </section>
+    </div>
+
+    <footer>
+        &copy; 2025 Tailor Stores. All rights reserved.
+    </footer>
+</body>
+
+</html>

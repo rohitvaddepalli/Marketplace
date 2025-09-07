@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: linear-gradient(to bottom right, #1f2937, #5b21b6, #000000);
+            color: white;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+            position: absolute;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        h1 {
+            position: absolute;
+            margin: 10px;
+            display: inline-block;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 30px;
+            margin-top: 15px;
+        }
+
+        .header-buttons {
+            position: absolute;
+            margin-top: 25px;
+            right: 50px;
+
+        }
+
+        .header-buttons a {
+            padding: 10px 15px;
+            margin-left: 10px;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+
+        .store-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        .store-card {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 40px 10px;
+            text-align: center;
+        }
+
+        .store-card a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .product-name {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            font-size: 1.1rem;
+            color: #8b5cf6;
+            margin-bottom: 15px;
+        }
+
+        .product-stock {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .add-to-cart {
+            display: inline-block;
+            padding: 8px 16px;
+            background: linear-gradient(to right, #8b5cf6, #3b82f6);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+            text-decoration: none;
+        }
+
+        .product-image-container {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .product-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .product-image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to right, #8b5cf6, #3b82f6);
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+
+        .loading-message,
+        .empty-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <h1 id="store-title">Marketplace</h1>
+            <div class="header-buttons">
+                <a href="customer.html">Home</a>
+                <a href="track-order.html">Track order</a>
+                <a href="customer.html">Back to store</a>
+            </div>
+        </div>
+        <h2 id="store-welcome">Welcome to Our Store</h2>
+    </header>
+
+    <div class="store-grid" id="product-grid">
+        <!-- Products will be loaded here dynamically -->
+        <div class="loading-message">Loading products...</div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const API_BASE_URL = 'http://localhost:3000';
+            const productGrid = document.getElementById('product-grid');
+            const storeTitle = document.getElementById('store-title');
+            const storeWelcome = document.getElementById('store-welcome');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const storeId = urlParams.get('store');
+
+            if (storeId) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/stores/${storeId}`);
+                    if (response.ok) {
+                        const store = await response.json();
+                        storeTitle.textContent = store.storeName;
+                        storeWelcome.textContent = `Welcome to ${store.storeName}`;
+
+                        fetchProducts(storeId);
+                    }
+                } catch (error) {
+                    console.error('Error fetching store details:', error);
+                }
+            } else {
+                fetchProducts();
+            }
+
+            async function fetchProducts(storeId) {
+                try {
+                    productGrid.innerHTML = '<div class="loading-message">Loading products...</div>';
+
+                    // Always require storeId now
+                    if (!storeId) {
+                        productGrid.innerHTML = '<div class="empty-message">Store not found</div>';
+                        return;
+                    }
+
+                    const response = await fetch(`${API_BASE_URL}/api/products?storeId=${storeId}`);
+                    if (!response.ok) throw new Error('Failed to fetch products');
+
+                    const products = await response.json();
+
+                    if (products.length === 0) {
+                        productGrid.innerHTML = '<div class="empty-message">No products available in this store yet.</div>';
+                        return;
+                    }
+
+                    renderProducts(products);
+                } catch (error) {
+                    console.error('Error fetching products:', error);
+                    productGrid.innerHTML = `
+            <div class="empty-message">
+                Error loading products. Please try again later.
+                <br><small>${error.message}</small>
+            </div>
+        `;
+                }
+            }
+
+            // Render products to the grid with images
+            function renderProducts(products) {
+                productGrid.innerHTML = '';
+
+                products.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'store-card';
+
+                    productCard.innerHTML = `
+                        <div class="product-image-container">
+                            ${product.image ?
+                            `<img src="${product.image}" alt="${product.name}" class="product-image">` :
+                            `<div class="product-image-placeholder">${product.name.charAt(0).toUpperCase()}</div>`
+                        }
+                        </div>
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">₹${product.price.toFixed(2)}</div>
+                        <div class="product-stock">${product.stock} in stock</div>
+                        <a href="product-details.html?product=${product._id}" class="add-to-cart">Buy Now</a>
+                    `;
+
+                    productGrid.appendChild(productCard);
+                });
+            }
+
+            // Initialize
+            fetchProducts();
+        });
+    </script>
+</body>
+
+</html>
